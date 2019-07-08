@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Http;
 using Datingapp.API.Helpers;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using DatingApp.API.Data;
 
 namespace Dateingapp.API
 {
@@ -44,10 +45,10 @@ namespace Dateingapp.API
             });
 
             services.BuildServiceProvider().GetService<DataContext>().Database.Migrate();
-            
+
             services.Configure<CloudanirySettingd>(Configuration.GetSection("CloudinarySettings"));
             services.AddCors();
-            services.AddTransient<seed>();
+            services.AddTransient<Seed>();
             services.AddScoped<IAuthRepository, Authrepository>();
             services.AddScoped<IDateingRepositry, DateingRepository>();
             services.AddAutoMapper();
@@ -72,7 +73,7 @@ namespace Dateingapp.API
             });
             services.Configure<CloudanirySettingd>(Configuration.GetSection("CloudinarySettings"));
             services.AddCors();
-            services.AddTransient<seed>();
+            services.AddTransient<Seed>();
             services.AddScoped<IAuthRepository, Authrepository>();
             services.AddScoped<IDateingRepositry, DateingRepository>();
             services.AddAutoMapper();
@@ -89,7 +90,7 @@ namespace Dateingapp.API
        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env,seed seeder)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env,Seed seeder)
         {
             if (env.IsDevelopment())
             {
@@ -111,6 +112,7 @@ namespace Dateingapp.API
             }
 
            // app.UseHttpsRedirection();
+            seeder.SeedUsers();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
             app.UseDefaultFiles();
@@ -121,7 +123,7 @@ namespace Dateingapp.API
                     defaults: new { controller = "FallBack", action ="Index"}
                 );
             });
-         seeder.SeedUsers();
+         
             
         }
     }
