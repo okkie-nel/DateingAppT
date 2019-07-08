@@ -37,11 +37,14 @@ namespace Dateingapp.API
         {
             
             services.AddDbContext<DataContext>(x =>x.
-            UseMySql(Configuration.GetConnectionString("DefaultConnection"))
+            UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             .ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.IncludeIgnoredWarning)));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(opt =>{
                 opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
+
+            services.BuildServiceProvider().GetService<DataContext>().Database.Migrate();
+            
             services.Configure<CloudanirySettingd>(Configuration.GetSection("CloudinarySettings"));
             services.AddCors();
             services.AddTransient<seed>();
