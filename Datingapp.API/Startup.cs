@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Datingapp.API.Helpers;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Dateingapp.API
 {
@@ -34,6 +35,34 @@ namespace Dateingapp.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+            services.AddDbContext<DataContext>(x =>x.
+            UseMySql(Configuration.GetConnectionString("DefaultConnection"))
+            .ConfigureWarnings(warnings => warnings.Ignore(CoreEventId.IncludeIgnoredWarning)));
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(opt =>{
+                opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
+            services.Configure<CloudanirySettingd>(Configuration.GetSection("CloudinarySettings"));
+            services.AddCors();
+            services.AddTransient<seed>();
+            services.AddScoped<IAuthRepository, Authrepository>();
+            services.AddScoped<IDateingRepositry, DateingRepository>();
+            services.AddAutoMapper();
+            services.AddScoped<loguseractive>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>{
+                options.TokenValidationParameters = new TokenValidationParameters{
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("Appsetting:Token").Value)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            } );
+       }
+
+       public void ConfigureDevelopmentServices(IServiceCollection services)
+        {
+           
             services.AddDbContext<DataContext>(x =>x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(opt =>{
                 opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -89,7 +118,7 @@ namespace Dateingapp.API
                     defaults: new { controller = "FallBack", action ="Index"}
                 );
             });
-         //seeder.SeedUsers();
+         seeder.SeedUsers();
             
         }
     }

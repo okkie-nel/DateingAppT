@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Datingapp.API.Models;
 using Newtonsoft.Json;
 
@@ -21,7 +22,8 @@ namespace Datingapp.API.Data
         }
 
         public void SeedUsers(){
-            var userData = System.IO.File.ReadAllText("Data/UserSeedData.json");
+            if (!_context.Users.Any()){
+ var userData = System.IO.File.ReadAllText("Data/UserSeedData.json");
             var users = JsonConvert.DeserializeObject<List<user>>(userData);
             foreach (var user in users)
             {
@@ -38,6 +40,8 @@ namespace Datingapp.API.Data
             }
 
             _context.SaveChanges();
+            }
+           
         }
     }
 }
