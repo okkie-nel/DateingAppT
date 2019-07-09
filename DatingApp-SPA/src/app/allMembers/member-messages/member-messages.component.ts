@@ -11,11 +11,11 @@ import { tap } from 'rxjs/operators';
   styleUrls: ['./member-messages.component.css']
 })
 export class MemberMessagesComponent implements OnInit {
-@Input() recpientId: number;
+@Input() recipientId: number;
 messages: Message[];
 
 newMessage: any = {};
-  constructor(private userservice: UserService, private authservice: AuthService, 
+  constructor(private userservice: UserService, private authservice: AuthService,
     private alertify: AlertifyService) { }
 
   ngOnInit() {
@@ -24,11 +24,11 @@ newMessage: any = {};
 
     loadMessages() {
       const currUserID = +this.authservice.decodeToken.nameid;
-      this.userservice.getMessageThread(this.authservice.decodeToken.nameid, this.recpientId)
+      this.userservice.getMessageThread(this.authservice.decodeToken.nameid, this.recipientId)
       .pipe(
         tap(messages => {
           for (let i = 0; i < messages.length; i++) {
-            if (messages[i].isRead === false && messages[i].recipientid === currUserID) {
+            if (messages[i].isRead === false && messages[i].RecipientId === currUserID) {
               this.userservice.markAsRead(currUserID, messages[i].id);
             }
           }
@@ -42,12 +42,12 @@ newMessage: any = {};
     }
 
     sendMessage() {
-      this.newMessage.recpientId = this.recpientId;
+      this.newMessage.RecipientId = this.recipientId;
       this.userservice.sendMessage(this.authservice.decodeToken.nameid, this.newMessage).subscribe((message: Message) => {
         this.messages.unshift(message);
         this.newMessage.content = '';
       }, error => {
         this.alertify.error(error);
-      })
+      });
     }
 }
