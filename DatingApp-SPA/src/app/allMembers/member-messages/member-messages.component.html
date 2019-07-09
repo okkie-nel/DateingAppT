@@ -1,3 +1,61 @@
-<p >
-  member-messages works!
-</p>
+<div class="card">
+  <div class="card-body">
+<div *ngIf="messages?.length === 0"><p>NO Messages Yet</p></div>
+
+<ul class="chat">
+  <li *ngFor="let message of messages">
+
+    <div *ngIf="message.senderId == recpientId">
+      <span class="chat-img float-left">
+        <img src="{{message.senderPhotoUrl}}" alt="{{message.senderKnownAS}}" class=rounded-circle>
+      </span>
+      <div class="chat-body">
+        <div class="header">
+          <strong class="primary-font">
+            {{message.senderKnownAS}}
+          </strong>
+          <small class="text-muted float-right">
+            <span class="fa fa-clock-o">{{message.messageSent | timeAgo}}</span>
+          </small>
+        </div>
+        <p>{{message.content}}</p>
+      </div>
+    </div>
+
+    <div *ngIf="message.senderId != recpientId">
+      <span class="chat-img float-right">
+        <img src="{{message.senderPhotoUrl}}" alt="{{message.senderKnownAS}}" class=rounded-circle>
+      </span>
+      <div class="chat-body">
+        <div class="header">
+            <small class="text-muted">
+                <span class="fa fa-clock-o">{{message.messageSent | timeAgo}}</span>
+                <span *ngIf="!message.isRead" class="text-danger">(unread)</span>
+                <span *ngIf="message.isRead" class="text-success">(read) {{message.dateRead | timeAgo}}</span>
+              </small>
+          <strong class="primary-font float-right">
+            {{message.senderKnownAS}}
+          </strong>
+          
+        </div>
+        <p>{{message.content}}</p>
+      </div>
+    </div>
+
+
+
+  </li>
+</ul>
+  </div>
+  <div class="card-footer">
+    <form #messageform="ngForm" (ngSubmit)="messageform.valid && sendMessage()">
+      <div class="input-group">
+        <input type="text"
+        [(ngModel)]="newMessage.content" name="content" class="form-control input-sm" placeholder="Send Messages">
+        <div class="input-group-append">
+          <button class="btn btn-primary" [disabled]="!messageform.valid">Send</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
